@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
-load_dotenv()
 
 import requests
 import os
 import argparse
 
-AUTH_TOKEN = os.getenv('AUTH_TOKEN')
 SERVER_URL = 'https://api-ssl.bitly.com'
 BITLY_LINKS = [
   'bit.ly/',
@@ -16,7 +14,7 @@ BITLY_LINKS = [
 ]
 
 
-def short_url(url, auth_token):
+def shorten_url(url, auth_token):
     headers = {
         'Authorization': f'Bearer {auth_token}'
     }
@@ -66,18 +64,21 @@ def is_bitly_link(link, known_links):
 
 if __name__ == '__main__':
 
+    load_dotenv()
+    auth_token = os.getenv('AUTH_TOKEN')
+
     parser = argparse.ArgumentParser(
-        description='Shortens the link or shows statistics on the shortened link'
+        description='Shortens the link and shows statistics on a short link'
     )
     parser.add_argument('link', help='Link')
     args = parser.parse_args()
     link = args.link
 
     if is_bitly_link(link, BITLY_LINKS):
-        total_clicks = get_total_clicks(link, AUTH_TOKEN)
+        total_clicks = get_total_clicks(link, auth_token)
         print(total_clicks if total_clicks is not None else 'Invalid bitlink')
     else:
-        shorten_link = short_url(link, AUTH_TOKEN)
-        print(shorten_link if shorten_link is not None else 'Invalid url')
+        short_url = shorten_url(link, auth_token)
+        print(short_url if short_url is not None else 'Invalid url')
 
 
